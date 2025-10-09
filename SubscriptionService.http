@@ -1,6 +1,42 @@
 @SubscriptionService_HostAddress = http://localhost:5033
 
-GET {{SubscriptionService_HostAddress}}/weatherforecast/
-Accept: application/json
+### Login
+POST {{SubscriptionService_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "service_id": "test_service",
+  "password": "test_password"
+}
+
+### Subscribe
+POST {{SubscriptionService_HostAddress}}/api/subscription/subscribe
+Content-Type: application/json
+
+{
+  "service_id": "test_service",
+  "token_id": "your-token-here",
+  "phone_number": "+1234567890"
+}
+
+### Unsubscribe
+POST {{SubscriptionService_HostAddress}}/api/subscription/unsubscribe
+Content-Type: application/json
+
+{
+  "service_id": "test_service",
+  "token_id": "your-token-here",
+  "phone_number": "+1234567890"
+}
+
+### Check Status
+POST {{SubscriptionService_HostAddress}}/api/subscription/status
+Content-Type: application/json
+
+{
+  "service_id": "test_service",
+  "token_id": "your-token-here",
+  "phone_number": "+1234567890"
+}
 
 ###

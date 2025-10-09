@@ -32,6 +32,22 @@ Token expiration time can be configured in `appsettings.json` using the `TokenVa
 
 ## Running the Application
 
+### Option 1: Using Docker Compose (Recommended)
+
+1. Start MySQL using Docker Compose:
+```bash
+docker compose up -d
+```
+
+2. Run the application:
+```bash
+dotnet run
+```
+
+3. The API will be available at `http://localhost:5033`
+
+### Option 2: Using existing MySQL Server
+
 1. Ensure MySQL is running
 2. Update the connection string in `appsettings.json`
 3. Run the application:
@@ -148,6 +164,40 @@ or
 The application seeds a test service on first run:
 - **service_id:** `test_service`
 - **password:** `test_password`
+
+## Testing the API
+
+You can use the provided `SubscriptionService.http` file with REST Client extensions in VS Code, or use curl:
+
+### Example Flow
+
+1. Login to get a token:
+```bash
+curl -X POST http://localhost:5033/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"service_id":"test_service","password":"test_password"}'
+```
+
+2. Subscribe with the token:
+```bash
+curl -X POST http://localhost:5033/api/subscription/subscribe \
+  -H "Content-Type: application/json" \
+  -d '{"service_id":"test_service","token_id":"your-token-here","phone_number":"+1234567890"}'
+```
+
+3. Check status:
+```bash
+curl -X POST http://localhost:5033/api/subscription/status \
+  -H "Content-Type: application/json" \
+  -d '{"service_id":"test_service","token_id":"your-token-here","phone_number":"+1234567890"}'
+```
+
+4. Unsubscribe:
+```bash
+curl -X POST http://localhost:5033/api/subscription/unsubscribe \
+  -H "Content-Type: application/json" \
+  -d '{"service_id":"test_service","token_id":"your-token-here","phone_number":"+1234567890"}'
+```
 
 ## Database Schema
 
