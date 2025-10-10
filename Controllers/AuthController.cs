@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SubscriptionService.Data;
 using SubscriptionService.DTOs;
-using SubscriptionService.Models;
+using SubscriptionService.Services;
 
 namespace SubscriptionService.Controllers;
 
@@ -10,13 +8,11 @@ namespace SubscriptionService.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IConfiguration _configuration;
+    private readonly IAuthService _authService;
 
-    public AuthController(ApplicationDbContext context, IConfiguration configuration)
+    public AuthController(IAuthService authService)
     {
-        _context = context;
-        _configuration = configuration;
+        _authService = authService;
     }
 
     [HttpPost("login")]
@@ -27,27 +23,13 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "service_id and password are required" });
         }
 
-        var service = await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == request.service_id);
+        var result = await _authService.LoginAsync(request);
 
-        if (service == null || service.Password != request.password)
+        if (result == null)
         {
             return Unauthorized(new { message = "Invalid credentials" });
         }
 
-        var tokenId = Guid.NewGuid().ToString();
-        var tokenValidityHours = _configuration.GetValue<int>("TokenValidityHours", 24);
-        
-        var token = new Token
-        {
-            TokenId = tokenId,
-            ServiceId = service.Id,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddHours(tokenValidityHours)
-        };
-
-        _context.Tokens.Add(token);
-        await _context.SaveChangesAsync();
-
-        return Ok(new LoginResponse { token = tokenId });
+        return Ok(result);
     }
 }

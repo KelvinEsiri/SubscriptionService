@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SubscriptionService.Data;
+using SubscriptionService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,10 @@ builder.Services.AddOpenApi();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+// Register application services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ISubscriptionService, SubscriptionManagementService>();
 
 var app = builder.Build();
 
