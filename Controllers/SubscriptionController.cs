@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SubscriptionService.Data;
 using SubscriptionService.DTOs;
-using SubscriptionService.Models;
+using SubscriptionService.Services;
 
 namespace SubscriptionService.Controllers;
 
@@ -10,11 +8,11 @@ namespace SubscriptionService.Controllers;
 [Route("api/[controller]")]
 public class SubscriptionController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ISubscriptionService _subscriptionService;
 
-    public SubscriptionController(ApplicationDbContext context)
+    public SubscriptionController(ISubscriptionService subscriptionService)
     {
-        _context = context;
+        _subscriptionService = subscriptionService;
     }
 
     [HttpPost("subscribe")]
@@ -25,45 +23,14 @@ public class SubscriptionController : ControllerBase
             return BadRequest(new { message = "service_id, token_id, and phone_number are required" });
         }
 
-        var service = await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == request.service_id);
-        if (service == null)
+        var result = await _subscriptionService.SubscribeAsync(request);
+
+        if (!result.Success)
         {
-            return BadRequest(new { message = "Invalid service_id" });
+            return StatusCode(result.StatusCode, new { message = result.ErrorMessage });
         }
 
-        var token = await _context.Tokens.FirstOrDefaultAsync(t => t.TokenId == request.token_id && t.ServiceId == service.Id);
-        if (token == null)
-        {
-            return Unauthorized(new { message = "Invalid token" });
-        }
-
-        if (token.ExpiresAt < DateTime.UtcNow)
-        {
-            return Unauthorized(new { message = "Token expired" });
-        }
-
-        var existingSubscription = await _context.Subscriptions
-            .FirstOrDefaultAsync(s => s.ServiceId == service.Id && s.PhoneNumber == request.phone_number && s.IsActive);
-
-        if (existingSubscription != null)
-        {
-            return Conflict(new { message = "Already subscribed" });
-        }
-
-        var subscriptionId = Guid.NewGuid().ToString();
-        var subscription = new Subscription
-        {
-            SubscriptionId = subscriptionId,
-            ServiceId = service.Id,
-            PhoneNumber = request.phone_number,
-            CreatedAt = DateTime.UtcNow,
-            IsActive = true
-        };
-
-        _context.Subscriptions.Add(subscription);
-        await _context.SaveChangesAsync();
-
-        return Ok(new SubscriptionResponse { subscription_id = subscriptionId });
+        return Ok(result.Data);
     }
 
     [HttpPost("unsubscribe")]
@@ -74,35 +41,14 @@ public class SubscriptionController : ControllerBase
             return BadRequest(new { message = "service_id, token_id, and phone_number are required" });
         }
 
-        var service = await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == request.service_id);
-        if (service == null)
+        var result = await _subscriptionService.UnsubscribeAsync(request);
+
+        if (!result.Success)
         {
-            return BadRequest(new { message = "Invalid service_id" });
+            return StatusCode(result.StatusCode, new { message = result.ErrorMessage });
         }
 
-        var token = await _context.Tokens.FirstOrDefaultAsync(t => t.TokenId == request.token_id && t.ServiceId == service.Id);
-        if (token == null)
-        {
-            return Unauthorized(new { message = "Invalid token" });
-        }
-
-        if (token.ExpiresAt < DateTime.UtcNow)
-        {
-            return Unauthorized(new { message = "Token expired" });
-        }
-
-        var subscription = await _context.Subscriptions
-            .FirstOrDefaultAsync(s => s.ServiceId == service.Id && s.PhoneNumber == request.phone_number && s.IsActive);
-
-        if (subscription == null)
-        {
-            return NotFound(new { message = "No active subscription found" });
-        }
-
-        subscription.IsActive = false;
-        await _context.SaveChangesAsync();
-
-        return Ok(new { message = "Unsubscribed successfully" });
+        return Ok(result.Data);
     }
 
     [HttpPost("status")]
@@ -113,39 +59,13 @@ public class SubscriptionController : ControllerBase
             return BadRequest(new { message = "service_id, token_id, and phone_number are required" });
         }
 
-        var service = await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == request.service_id);
-        if (service == null)
+        var result = await _subscriptionService.GetStatusAsync(request);
+
+        if (!result.Success)
         {
-            return BadRequest(new { message = "Invalid service_id" });
+            return StatusCode(result.StatusCode, new { message = result.ErrorMessage });
         }
 
-        var token = await _context.Tokens.FirstOrDefaultAsync(t => t.TokenId == request.token_id && t.ServiceId == service.Id);
-        if (token == null)
-        {
-            return Unauthorized(new { message = "Invalid token" });
-        }
-
-        if (token.ExpiresAt < DateTime.UtcNow)
-        {
-            return Unauthorized(new { message = "Token expired" });
-        }
-
-        var subscription = await _context.Subscriptions
-            .FirstOrDefaultAsync(s => s.ServiceId == service.Id && s.PhoneNumber == request.phone_number && s.IsActive);
-
-        if (subscription == null)
-        {
-            return Ok(new StatusResponse 
-            { 
-                status = "not_subscribed",
-                subscription_date = null
-            });
-        }
-
-        return Ok(new StatusResponse 
-        { 
-            status = "subscribed",
-            subscription_date = subscription.CreatedAt
-        });
+        return Ok(result.Data);
     }
 }
