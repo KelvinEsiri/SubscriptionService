@@ -7,5 +7,6 @@ public class Subscription
     public int ServiceId { get; set; }
     public required string PhoneNumber { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
     public bool IsActive { get; set; }
 }

@@ -25,11 +25,29 @@ public class AuthController : ControllerBase
 
         var result = await _authService.LoginAsync(request);
 
-        if (result == null)
+        if (!result.Success)
         {
-            return Unauthorized(new { message = "Invalid credentials" });
+            return StatusCode(result.StatusCode, new { message = result.ErrorMessage });
         }
 
-        return Ok(result);
+        return Ok(result.Data);
+    }
+
+    [HttpPost("register")]
+    public async Task<ActionResult> Register([FromBody] LoginRequest request)
+    {
+        if (string.IsNullOrEmpty(request.service_id) || string.IsNullOrEmpty(request.password))
+        {
+            return BadRequest(new { message = "service_id and password are required" });
+        }
+
+        var result = await _authService.RegisterAsync(request);
+
+        if (!result.Success)
+        {
+            return StatusCode(result.StatusCode, new { message = result.ErrorMessage });
+        }
+
+        return StatusCode(result.StatusCode, new { message = "Service registered successfully", service_id = result.Data!.ServiceId });
     }
 }

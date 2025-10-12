@@ -41,6 +41,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.SubscriptionId).HasMaxLength(100).IsRequired();
             entity.Property(e => e.PhoneNumber).HasMaxLength(50).IsRequired();
             entity.Property(e => e.CreatedAt).IsRequired();
+            entity.Property(e => e.UpdatedAt).IsRequired();
             entity.Property(e => e.IsActive).IsRequired();
         });
     }
