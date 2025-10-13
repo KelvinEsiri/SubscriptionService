@@ -38,32 +38,6 @@ A simple C# .NET API with MySQL for managing subscriptions.
    - Update the connection string in `appsettings.json` with your MySQL credentials
 
 5. **Run the application**
-   ```bash
-   dotnet run
-   ```
-
-6. **Access the application**
-   - The API will be available at: `http://localhost:5033`
-   - Use Swagger UI for testing: `http://localhost:5033/swagger`
-   - The database will be automatically created and seeded on first run
-
-## Configuration
-
-### Database Connection
-Update the connection string in `appsettings.json`:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=subscription_service;User=root;Password=your_password;"
-  },
-  "TokenValidityHours": 24
-}
-```
-
-### Token Validity
-Token expiration time can be configured in `appsettings.json` using the `TokenValidityHours` setting (default is 24 hours).
-
-## Running the Application
 
 ### Option 1: Run locally with dotnet (Recommended for development)
 
@@ -89,6 +63,26 @@ docker compose up -d
 The API will be available at `http://localhost:5033`
 
 **Note:** The Docker setup runs the API in a container but connects to MySQL on your host machine using `host.docker.internal`.
+
+6. **Access the application**
+   - Use Swagger UI for testing: `http://localhost:5033/swagger`
+   - The database will be automatically created and seeded on first run
+
+## Configuration
+
+### Database Connection
+Update the connection string in `appsettings.json`:
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=subscription_service;User=root;Password=your_password;"
+  },
+  "TokenValidityHours": 24
+}
+```
+
+### Token Validity
+Token expiration time can be configured in `appsettings.json` using the `TokenValidityHours` setting (default is 24 hours).
 
 ## API Endpoints
 
