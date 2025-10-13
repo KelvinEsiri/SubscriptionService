@@ -111,3 +111,31 @@ $RECYCLE.BIN/
 *.mdf
 *.ldf
 *.ndf
+*.db
+*.sqlite
+*.sqlite3
+
+# Sensitive configuration files (keep appsettings.json with placeholders, but ignore the Development version with real credentials)
+# appsettings.Development.json # Uncomment this if you want to ignore development settings
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# Logs
+logs/
+*.log
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# Node modules (if any)
+node_modules/
+
+# JetBrains Rider additional
+*.iml
