@@ -42,7 +42,6 @@ A simple C# .NET API with MySQL for managing subscriptions.
    **Option 1: Run locally with dotnet (Recommended for development)**
 
    - Ensure MySQL is running on your local machine
-   - Update the connection string in `appsettings.json` if needed
    - Run the application:
      ```bash
      dotnet run
