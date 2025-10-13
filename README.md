@@ -1,5 +1,6 @@
 # StrivoLabsSubscriptionService
-API for subscription service
+
+This project was developed as part of the Strivo Labs Backend Developer Task. It provides a subscription management service built with C# and .NET 9, implementing clean architecture principles and RESTful API design.
 
 ## Overview
 A simple C# .NET API with MySQL for managing subscriptions.
