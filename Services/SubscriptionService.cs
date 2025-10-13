@@ -106,7 +106,6 @@ public class SubscriptionManagementService : ISubscriptionService
             ServiceId = service.Id,
             PhoneNumber = request.phone_number,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
             IsActive = true
         };
 
@@ -201,7 +200,7 @@ public class SubscriptionManagementService : ISubscriptionService
             Data = new StatusResponse
             {
                 status = "subscribed",
-                subscription_date = subscription.UpdatedAt
+                subscription_date = subscription.UpdatedAt ?? subscription.CreatedAt
             },
             StatusCode = 200
         };
