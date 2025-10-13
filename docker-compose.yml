@@ -9,6 +9,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
-      - ConnectionStrings__DefaultConnection=server=host.docker.internal;port=3306;database=SubscriptionsDb;user=root;password=@ruedon5;
+      - ConnectionStrings__DefaultConnection=server=host.docker.internal;port=3306;database=SubscriptionsDb;user=root;password=your_password;
     extra_hosts:
       - "host.docker.internal:host-gateway"
