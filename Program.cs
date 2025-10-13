@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using SubscriptionService.Data;
 using SubscriptionService.Services;
 
@@ -8,12 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(); // ✅ Use Swagger for OpenAPI
+builder.Services.AddSwaggerGen(); // Use Swagger
 
 // Configure MySQL Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// ✅ Ensure EF Core MySQL package is used
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
@@ -23,7 +21,7 @@ builder.Services.AddScoped<ISubscriptionService, SubscriptionManagementService>(
 
 var app = builder.Build();
 
-// ✅ Ensure database is created/migrated on startup (safer pattern)
+// Ensure database is created/migrated on startup (safer pattern)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -39,7 +37,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization(); // ✅ Add authorization middleware (if using [Authorize])
+app.UseAuthorization(); // Add authorization middleware (if using [Authorize])
 app.MapControllers();
 
 app.Run();

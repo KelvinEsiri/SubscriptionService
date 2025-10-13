@@ -17,11 +17,11 @@ public class AuthService : IAuthService
     }
 
     // Register a new service
-    public async Task<ServiceResult<Service>> RegisterAsync(LoginRequest request)
+    public async Task<ServiceResult<AuthRequest>> RegisterAsync(AuthRequest request)
     {
         if (await _context.Services.AnyAsync(s => s.ServiceId == request.service_id))
         {
-            return new ServiceResult<Service>
+            return new ServiceResult<AuthRequest>
             {
                 Success = false,
                 ErrorMessage = "Service ID already exists",
@@ -38,22 +38,22 @@ public class AuthService : IAuthService
         _context.Services.Add(service);
         await _context.SaveChangesAsync();
 
-        return new ServiceResult<Service>
+        return new ServiceResult<AuthRequest>
         {
             Success = true,
-            Data = service,
+            Data = request,
             StatusCode = 201
         };
     }
 
     // Authenticate service and generate token
-    public async Task<ServiceResult<LoginResponse>> LoginAsync(LoginRequest request)
+    public async Task<ServiceResult<AuthResponse>> LoginAsync(AuthRequest request)
     {
         var service = await _context.Services.FirstOrDefaultAsync(s => s.ServiceId == request.service_id);
 
         if (service == null)
         {
-            return new ServiceResult<LoginResponse>
+            return new ServiceResult<AuthResponse>
             {
                 Success = false,
                 ErrorMessage = "Invalid service_id",
@@ -63,7 +63,7 @@ public class AuthService : IAuthService
 
         if (service.Password != request.password)
         {
-            return new ServiceResult<LoginResponse>
+            return new ServiceResult<AuthResponse>
             {
                 Success = false,
                 ErrorMessage = "Invalid password",
@@ -79,16 +79,17 @@ public class AuthService : IAuthService
 
         if (existingToken != null)
         {
-            return new ServiceResult<LoginResponse>
+            return new ServiceResult<AuthResponse>
             {
                 Success = true,
-                Data = new LoginResponse { token = existingToken.TokenId },
+                Data = new AuthResponse { token = existingToken.TokenId },
                 StatusCode = 200
             };
         }
 
-        // Generate new token
+        // Generate new token using Guid which is a .NET built-in method to generate unique identifiers
         var tokenId = Guid.NewGuid().ToString();
+        // Token validity duration from configuration (default to 24 hours if not set)
         var tokenValidityHours = _configuration.GetValue("TokenValidityHours", 24);
 
         var token = new Token
@@ -102,10 +103,10 @@ public class AuthService : IAuthService
         _context.Tokens.Add(token);
         await _context.SaveChangesAsync();
 
-        return new ServiceResult<LoginResponse>
+        return new ServiceResult<AuthResponse>
         {
             Success = true,
-            Data = new LoginResponse { token = tokenId },
+            Data = new AuthResponse { token = tokenId },
             StatusCode = 200
         };
     }

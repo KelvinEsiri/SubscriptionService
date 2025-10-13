@@ -16,7 +16,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult<AuthResponse>> Login([FromBody] AuthRequest request)
     {
         if (string.IsNullOrEmpty(request.service_id) || string.IsNullOrEmpty(request.password))
         {
@@ -34,7 +34,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult> Register([FromBody] LoginRequest request)
+    public async Task<ActionResult> Register([FromBody] AuthRequest request)
     {
         if (string.IsNullOrEmpty(request.service_id) || string.IsNullOrEmpty(request.password))
         {
@@ -48,6 +48,6 @@ public class AuthController : ControllerBase
             return StatusCode(result.StatusCode, new { message = result.ErrorMessage });
         }
 
-        return StatusCode(result.StatusCode, new { message = "Service registered successfully", service_id = result.Data!.ServiceId });
+        return StatusCode(result.StatusCode, new { message = "Service registered successfully", result.Data!.service_id });
     }
 }

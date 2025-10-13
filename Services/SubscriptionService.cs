@@ -98,6 +98,7 @@ public class SubscriptionManagementService : ISubscriptionService
             };
         }
 
+        // Generate new subscription ID using Guid which is a .NET built-in method to generate unique identifiers
         var subscriptionId = Guid.NewGuid().ToString();
         var subscription = new Subscription
         {
@@ -244,5 +245,78 @@ public class SubscriptionManagementService : ISubscriptionService
             Data = new { message = "Subscription deleted successfully" },
             StatusCode = 200
         };
+    }
+
+    // Get all subscriptions
+    public async Task<List<ServiceResult<Subscription?>>> GetAllSubscriptionsAsync()
+    {
+        var subscriptions = await _context.Subscriptions.ToListAsync();
+
+        var results = new List<ServiceResult<Subscription?>>();
+        if (subscriptions.Count == 0)
+        {
+            results.Add(new ServiceResult<Subscription?>
+            {
+                Success = false,
+                Data = null,
+                ErrorMessage = "No subscriptions found",
+                StatusCode = 404
+            });
+            return results;
+        }
+
+        foreach (var subscription in subscriptions)
+        {
+            var result = new ServiceResult<Subscription?>
+            {
+                Success = true,
+                Data = subscription
+            };
+            results.Add(result);
+        }
+        return results;
+    }
+
+    // Get filtered subscriptions by date range
+    public async Task<List<ServiceResult<Subscription?>>> GetFilteredSubscriptionAsync(DateTime From, DateTime To)
+    {
+        var subscriptionsresult = await GetAllSubscriptionsAsync();
+        var results = new List<ServiceResult<Subscription?>>();
+
+        if (subscriptionsresult.All(s => s.Data == null))
+        {
+            results.Add(new ServiceResult<Subscription?>
+            {
+                Success = false,
+                Data = null,
+                ErrorMessage = "No subscriptions found",
+                StatusCode = 404
+            });
+            return results;
+        }
+        var filteredSubscriptions = subscriptionsresult.Where(s => s.Data != null && s.Data.CreatedAt >= From && s.Data.CreatedAt <= To).ToList();
+
+        if (filteredSubscriptions.Count == 0)
+        {
+            results.Add(new ServiceResult<Subscription?>
+            {
+                Success = false,
+                Data = null,
+                ErrorMessage = "No subscriptions found in the given date range",
+                StatusCode = 404
+            });
+            return results;
+        }
+
+        foreach (var subscription in filteredSubscriptions)
+        {
+            var result = new ServiceResult<Subscription?>
+            {
+                Success = subscription.Success,
+                Data = subscription.Data
+            };
+            results.Add(result);
+        }
+        return results;
     }
 }

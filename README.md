@@ -13,6 +13,39 @@ A simple C# .NET API with MySQL for managing subscriptions.
 ## Requirements
 - .NET 9.0
 - MySQL Server
+- Docker (optional, only if using Docker Compose)
+
+## Installation & Running
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/KelvinEsiri/StrivoLabsSubscriptionService.git
+   cd StrivoLabsSubscriptionService
+   ```
+
+2. **Restore dependencies**
+   ```bash
+   dotnet restore
+   ```
+
+3. **Build the solution**
+   ```bash
+   dotnet build
+   ```
+
+4. **Set up MySQL database**
+   - Install and run MySQL Server locally
+   - Update the connection string in `appsettings.json` with your MySQL credentials
+
+5. **Run the application**
+   ```bash
+   dotnet run
+   ```
+
+6. **Access the application**
+   - The API will be available at: `http://localhost:5033`
+   - Use Swagger UI for testing: `http://localhost:5033/swagger`
+   - The database will be automatically created and seeded on first run
 
 ## Configuration
 
@@ -32,30 +65,30 @@ Token expiration time can be configured in `appsettings.json` using the `TokenVa
 
 ## Running the Application
 
-### Option 1: Using Docker Compose (Recommended)
+### Option 1: Run locally with dotnet (Recommended for development)
 
-1. Start MySQL using Docker Compose:
-```bash
-docker compose up -d
-```
-
-2. Run the application:
-```bash
-dotnet run
-```
-
-3. The API will be available at `http://localhost:5033`
-
-### Option 2: Using existing MySQL Server
-
-1. Ensure MySQL is running
-2. Update the connection string in `appsettings.json`
+1. Ensure MySQL is running on your local machine
+2. Update the connection string in `appsettings.json` if needed
 3. Run the application:
 ```bash
 dotnet run
 ```
 
-The API will be available at `https://localhost:5001` (or the port specified in launchSettings.json).
+The API will be available at `http://localhost:5033`
+
+### Option 2: Run API in Docker (MySQL on host machine)
+
+**Prerequisites:** Docker Desktop must be installed
+
+1. Ensure MySQL is running on your local machine
+2. Build and run the API container:
+```bash
+docker compose up -d
+```
+
+The API will be available at `http://localhost:5033`
+
+**Note:** The Docker setup runs the API in a container but connects to MySQL on your host machine using `host.docker.internal`.
 
 ## API Endpoints
 
@@ -220,3 +253,11 @@ curl -X POST http://localhost:5033/api/subscription/unsubscribe \
 - PhoneNumber (String)
 - CreatedAt (DateTime)
 - IsActive (Boolean)
+
+## Contact
+
+**Kelvin Esiri**
+
+- 📧 Email: [kelvinesiri@gmail.com](mailto:kelvinesiri@gmail.com)
+- 📱 Phone: 08161643301
+- 💼 LinkedIn: [linkedin.com/in/kelvinesiri](https://www.linkedin.com/in/kelvinesiri/)
