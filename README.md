@@ -243,6 +243,7 @@ curl -X POST http://localhost:5033/api/subscription/unsubscribe \
 - ServiceId (Foreign Key)
 - PhoneNumber (String)
 - CreatedAt (DateTime)
+- UpdatedAt (DateTime)
 - IsActive (Boolean)
 
 ## Contact
