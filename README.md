@@ -246,6 +246,23 @@ curl -X POST http://localhost:5033/api/subscription/unsubscribe \
 - UpdatedAt (DateTime)
 - IsActive (Boolean)
 
+## Additional Implementation Notes
+
+### Showcase Methods
+The `SubscriptionManagementService` includes several additional methods that are **not exposed through API endpoints** but are implemented to demonstrate different coding patterns and architectural approaches:
+
+- **`DeleteSubscriptionAsync`** - Permanently removes a subscription from the database (vs. soft delete in `UnsubscribeAsync`)
+- **`GetAllSubscriptionsAsync`** - Retrieves all subscriptions from the database
+- **`GetAllSubscriptionsResponseAsync`** - Gets all subscriptions with a standardized service result wrapper
+- **`GetFilteredSubscriptionAsync`** - Filters subscriptions by date range, showcasing centralized logic reuse
+
+These methods demonstrate:
+- **Code reusability** - `GetAllSubscriptionsAsync` is reused by `GetFilteredSubscriptionAsync`
+- **Consistent error handling** - Using the `ServiceResult<T>` pattern
+- **Different data access patterns** - Both simple and complex queries
+
+While not currently used in the API, these methods can be easily integrated if needed by adding corresponding controller endpoints.
+
 ## Contact
 
 **Kelvin Esiri**

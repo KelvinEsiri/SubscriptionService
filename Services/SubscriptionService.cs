@@ -247,75 +247,63 @@ public class SubscriptionManagementService : ISubscriptionService
     }
 
     // Get all subscriptions
-    public async Task<List<ServiceResult<Subscription?>>> GetAllSubscriptionsAsync()
+    public async Task<List<Subscription>> GetAllSubscriptionsAsync()
     {
-        var subscriptions = await _context.Subscriptions.ToListAsync();
+        return await _context.Subscriptions.ToListAsync();
+    }
 
-        var results = new List<ServiceResult<Subscription?>>();
+    // Get all subscriptions with detailed response
+    public async Task<ServiceResult<List<Subscription>>> GetAllSubscriptionsResponseAsync()
+    {
+        // Uses centralized logic to fetch all subscriptions
+        var subscriptions = await GetAllSubscriptionsAsync();
+
         if (subscriptions.Count == 0)
         {
-            results.Add(new ServiceResult<Subscription?>
+            return new ServiceResult<List<Subscription>>
             {
                 Success = false,
-                Data = null,
+                Data = new List<Subscription>(),
                 ErrorMessage = "No subscriptions found",
                 StatusCode = 404
-            });
-            return results;
+            };
         }
 
-        foreach (var subscription in subscriptions)
+        return new ServiceResult<List<Subscription>>
         {
-            var result = new ServiceResult<Subscription?>
-            {
-                Success = true,
-                Data = subscription
-            };
-            results.Add(result);
-        }
-        return results;
+            Success = true,
+            Data = subscriptions,
+            StatusCode = 200
+        };
     }
 
     // Get filtered subscriptions by date range
-    public async Task<List<ServiceResult<Subscription?>>> GetFilteredSubscriptionAsync(DateTime From, DateTime To)
+    // Note: Database level filtering would be more efficient, but this is to showcase centralized logic
+    public async Task<ServiceResult<List<Subscription>>> GetFilteredSubscriptionAsync(DateTime from, DateTime to)
     {
-        var subscriptionsresult = await GetAllSubscriptionsAsync();
-        var results = new List<ServiceResult<Subscription?>>();
-
-        if (subscriptionsresult.All(s => s.Data == null))
-        {
-            results.Add(new ServiceResult<Subscription?>
-            {
-                Success = false,
-                Data = null,
-                ErrorMessage = "No subscriptions found",
-                StatusCode = 404
-            });
-            return results;
-        }
-        var filteredSubscriptions = subscriptionsresult.Where(s => s.Data != null && s.Data.CreatedAt >= From && s.Data.CreatedAt <= To).ToList();
-
+        // Uses centralized logic to fetch all subscriptions first
+        var subscriptions = await GetAllSubscriptionsAsync();
+        
+        var filteredSubscriptions = subscriptions
+            .Where(s => s.CreatedAt >= from && s.CreatedAt <= to)
+            .ToList();
+        
         if (filteredSubscriptions.Count == 0)
         {
-            results.Add(new ServiceResult<Subscription?>
+            return new ServiceResult<List<Subscription>>
             {
                 Success = false,
-                Data = null,
+                Data = new List<Subscription>(),
                 ErrorMessage = "No subscriptions found in the given date range",
                 StatusCode = 404
-            });
-            return results;
+            };
         }
 
-        foreach (var subscription in filteredSubscriptions)
+        return new ServiceResult<List<Subscription>>
         {
-            var result = new ServiceResult<Subscription?>
-            {
-                Success = subscription.Success,
-                Data = subscription.Data
-            };
-            results.Add(result);
-        }
-        return results;
+            Success = true,
+            Data = filteredSubscriptions,
+            StatusCode = 200
+        };
     }
 }
