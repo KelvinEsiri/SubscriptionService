@@ -39,7 +39,7 @@ A simple C# .NET API with MySQL for managing subscriptions.
 
 5. **Run the application** (choose one option below)
 
-   ### Option 1: Run locally with dotnet (Recommended for development)
+   **Option 1: Run locally with dotnet (Recommended for development)**
 
    - Ensure MySQL is running on your local machine
    - Update the connection string in `appsettings.json` if needed
@@ -49,9 +49,9 @@ A simple C# .NET API with MySQL for managing subscriptions.
      ```
    - The API will be available at `http://localhost:5033`
 
-   ### Option 2: Run API in Docker (MySQL on host machine)
+   **Option 2: Run API in Docker (MySQL on host machine)**
 
-   **Prerequisites:** Docker Desktop must be installed
+   *Prerequisites: Docker Desktop must be installed*
 
    - Ensure MySQL is running on your local machine
    - Build and run the API container:
@@ -60,7 +60,7 @@ A simple C# .NET API with MySQL for managing subscriptions.
      ```
    - The API will be available at `http://localhost:5033`
 
-   **Note:** The Docker setup runs the API in a container but connects to MySQL on your host machine using `host.docker.internal`.
+   *Note: The Docker setup runs the API in a container but connects to MySQL on your host machine using `host.docker.internal`.*
 
 6. **Access the application**
    - Use Swagger UI for testing: `http://localhost:5033/swagger`
